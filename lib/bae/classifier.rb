@@ -47,9 +47,9 @@ module Bae
       @total_terms += 1
     end
 
-    def classify(data)
+    def classify(data, ngram_len)
       if data.is_a?(::String)
-        classify_from_string(data)
+        classify_from_string(data, ngram_len)
       elsif data.is_a?(::Hash)
         classify_from_hash(data)
       else
@@ -63,8 +63,13 @@ module Bae
       classify_from_string(document)
     end
 
-    def classify_from_string(document)
-      words = document.split.uniq
+    def classify_from_string(document, ngram_len)
+      if ngram_len.nil?
+        words = document.split.uniq
+      else
+        words = []
+        document.split("").each_cons(ngram_len) { |s| words.push(s.join) }
+      end
       likelihoods = @likelihoods.dup
       posterior = {}
 
